@@ -1,0 +1,5 @@
+databaseChangeLog:
+  -include:
+    file: db/changelogs/1.0-create-sequence/seq.sql
+  - include:
+    file: db/changelogs/1.1-create-page-table/page.sql

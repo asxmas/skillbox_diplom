@@ -1,0 +1,32 @@
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://${PSQL_HOSTNAME:localhost}:${PSQL_PORT:5432}/search_engine
+    username: ${PSQL_USERNAME}
+    password: ${PSQL_PASSWORD}
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQL95Dialect
+        show_sql: false
+        properties:
+          hibernate:
+            format_sql: false
+        temp:
+          use_jdbc_metadata_defaults: false
+    hibernate:
+      ddl-auto: none
+  liquibase:
+    change-log: liquibase/changelog.yaml
+    enabled: true
+logging:
+  level:
+    liquibase: INFO
+    org:
+      springframework: INFO
+      hibernate: INFO
+  pattern:
+    console: "%date{dd.MM-HH:mm:ss.SSS} %highlight(%5level) [%thread] %logger{45}: %msg%n"
+    file: "%date{dd.MM-HH:mm:ss.SSS} %highlight(%5level) [%thread] %logger{45}: %msg%n"
+  file:
+    name: logging.log
