@@ -64,6 +64,11 @@ public class PageServiceImpl extends RecursiveAction {
                 if(!newLink.isEmpty() && newLink.startsWith(startUrl) && !newLink
                         .contains("#")){
                     PageServiceImpl pageService = new PageServiceImpl(newLink);
+                    try {
+                        Thread.sleep((long) (Math.random()*5000 + 500));
+                    } catch (Exception e){
+                        e.printStackTrace();
+                    }
                     pageService.fork();
                     subTask.add(pageService);
                     createPage(newLink);
