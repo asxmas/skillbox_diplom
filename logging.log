@@ -1,7 +1,7 @@
-30.09-15:07:59.733 [34m INFO[0;39m [main] searchapp.App: Starting App using Java 16.0.1 on Borocomp with PID 6020 (C:\Users\java_basics\Diplom\target\classes started by asxma in C:\Users\java_basics\Diplom)
-30.09-15:07:59.737 [34m INFO[0;39m [main] searchapp.App: No active profile set, falling back to default profiles: default
-30.09-15:08:00.079 [31m WARN[0;39m [main] o.s.b.w.s.c.AnnotationConfigServletWebServerApplicationContext: Exception encountered during context initialization - cancelling refresh attempt: org.springframework.context.ApplicationContextException: Unable to start web server; nested exception is org.springframework.context.ApplicationContextException: Unable to start ServletWebServerApplicationContext due to missing ServletWebServerFactory bean.
-30.09-15:08:00.852 [1;31mERROR[0;39m [main] org.springframework.boot.SpringApplication: Application run failed
+03.10-20:55:53.157 [34m INFO[0;39m [main] searchapp.App: Starting App using Java 16.0.1 on Borocomp with PID 11032 (C:\Users\java_basics\Diplom\target\classes started by asxma in C:\Users\java_basics\Diplom)
+03.10-20:55:53.176 [34m INFO[0;39m [main] searchapp.App: No active profile set, falling back to default profiles: default
+03.10-20:55:53.445 [31m WARN[0;39m [main] o.s.b.w.s.c.AnnotationConfigServletWebServerApplicationContext: Exception encountered during context initialization - cancelling refresh attempt: org.springframework.context.ApplicationContextException: Unable to start web server; nested exception is org.springframework.context.ApplicationContextException: Unable to start ServletWebServerApplicationContext due to missing ServletWebServerFactory bean.
+03.10-20:55:54.198 [1;31mERROR[0;39m [main] org.springframework.boot.SpringApplication: Application run failed
 org.springframework.context.ApplicationContextException: Unable to start web server; nested exception is org.springframework.context.ApplicationContextException: Unable to start ServletWebServerApplicationContext due to missing ServletWebServerFactory bean.
 	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.onRefresh(ServletWebServerApplicationContext.java:163)
 	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:577)
@@ -11,7 +11,7 @@ org.springframework.context.ApplicationContextException: Unable to start web ser
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:337)
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1336)
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1325)
-	at searchapp.App.main(App.java:13)
+	at searchapp.App.main(App.java:15)
 Caused by: org.springframework.context.ApplicationContextException: Unable to start ServletWebServerApplicationContext due to missing ServletWebServerFactory bean.
 	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.getWebServerFactory(ServletWebServerApplicationContext.java:210)
 	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.createWebServer(ServletWebServerApplicationContext.java:180)
