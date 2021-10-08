@@ -1,8 +1,8 @@
-package searchapp.DAO.impl;
+package searchapp.dao.impl;
 
 import org.hibernate.Session;
 import org.hibernate.Transaction;
-import searchapp.DAO.PageDAO;
+import searchapp.dao.PageDAO;
 import searchapp.entity.Page;
 import searchapp.config.HibernateSessionFactoryUtil;
 

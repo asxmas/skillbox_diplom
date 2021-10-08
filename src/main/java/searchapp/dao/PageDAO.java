@@ -1,4 +1,4 @@
-package searchapp.DAO;
+package searchapp.dao;
 
 import searchapp.entity.Page;
 

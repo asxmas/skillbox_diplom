@@ -7,9 +7,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import searchapp.DAO.impl.PageDAOimpl;
+import searchapp.dao.impl.PageDAOimpl;
 import searchapp.entity.Page;
-import searchapp.DAO.PageDAO;
+import searchapp.dao.PageDAO;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -18,10 +18,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.TreeSet;
 import java.util.concurrent.ForkJoinPool;
 
-@Slf4j
 @Getter
 @RequiredArgsConstructor
 @Service
@@ -34,7 +32,7 @@ public class PageServiceImpl implements searchapp.service.PageService {
     @Override
     public void getSiteMap(){
 
-        SiteMap site = new SiteMap(startUrl, startUrl);
+        SiteMapImpl site = new SiteMapImpl(startUrl, startUrl);
         ForkJoinPool forkJoinPool = new ForkJoinPool();
         forkJoinPool.invoke(site);
         createPages(site.getLinks());
@@ -72,6 +70,7 @@ public class PageServiceImpl implements searchapp.service.PageService {
                             Thread.sleep((long)(Math.random()*(500 - 100) + 100));
                             ds.getConnection();
                         } catch (InterruptedException | SQLException throwables) {
+//                            log.error(throwables.getMessage());
                             throwables.printStackTrace();
                         }
                         Arrays.stream(links[finalI]).forEach(this::createPage);
@@ -80,11 +79,12 @@ public class PageServiceImpl implements searchapp.service.PageService {
             srcPos += links[i].length;
             mod--;
         }
-       Arrays.stream(threads).forEach(thread -> thread.start());
+       Arrays.stream(threads).forEach(Thread::start);
         Arrays.stream(threads).forEach(thread -> {
             try {
                 thread.join();
             } catch (InterruptedException e) {
+//                log.error(e.getMessage());
                 e.printStackTrace();
             }
         });
@@ -122,12 +122,5 @@ public class PageServiceImpl implements searchapp.service.PageService {
             e.printStackTrace();
         }
         return stringBuffer.toString();
-    }
-
-    public void getNodes(SiteMap siteMap, TreeSet<String> links) {
-        links.add(siteMap.getUrl());
-        for (SiteMap child : siteMap.getChildrenForMain()) {
-            getNodes(child, links);
-        }
     }
 }

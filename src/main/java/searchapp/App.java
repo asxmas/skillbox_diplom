@@ -1,18 +1,23 @@
 package searchapp;
 
-import lombok.extern.slf4j.Slf4j;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.Marker;
+import org.apache.logging.log4j.MarkerManager;
 import searchapp.service.impl.PageServiceImpl;
 
-@Slf4j
 public class App {
+    private static final Logger log = LogManager.getRootLogger();
+    private static final Marker INFO_MES = MarkerManager.getMarker("INFO_MES");
+
 
     public static void main(String[] args) {
-        long start = System.currentTimeMillis();
-        String startUrl = "https://volochek.life/";
+        log.info(INFO_MES, "Старт");
+        String startUrl = "https://dimonvideo.ru/";
         PageServiceImpl pageService = new PageServiceImpl(startUrl);
         pageService.getSiteMap();
 
-        System.out.println(System.currentTimeMillis() - start);
+        log.error("Окончание");
 
     }
 
