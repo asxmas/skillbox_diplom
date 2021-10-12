@@ -4,7 +4,6 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import searchapp.dao.impl.PageDAOimpl;
@@ -40,14 +39,14 @@ public class PageServiceImpl implements searchapp.service.PageService {
     }
 
     @Override
-    public void createPage(String url){
+    public Page createPage(String url){
 
         Page page = new Page();
         page.setPath(url);
         page.setCode(getCode(url));
         page.setContent(getContent(url));
         pageDAO.save(page);
-
+        return page;
     }
 
     public void createPages(String[] allLinks){

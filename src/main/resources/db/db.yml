@@ -1,5 +1,7 @@
 databaseChangeLog:
-  -include:
-    file: db/changelogs/1.0-create-sequence/seq.sql
   - include:
-    file: db/changelogs/1.1-create-page-table/page.sql
+      file: db/changelogs/1.0-create-sequence/seq.sql
+  - include:
+      file: db/changelogs/1.1-create-page-table/page.sql
+  - include:
+      file: db/changelogs/1.2-patch-page-table/unique-page.sql

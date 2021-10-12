@@ -20,7 +20,7 @@ public class Page {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private int id;
 
-    @Column(name = "path", nullable = false)
+    @Column(name = "path", nullable = false, unique = true)
     private String path;
 
     @Column(name = "code", nullable = false)

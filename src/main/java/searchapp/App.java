@@ -13,7 +13,7 @@ public class App {
 
     public static void main(String[] args) {
         log.info(INFO_MES, "Старт");
-        String startUrl = "https://dimonvideo.ru/";
+        String startUrl = "http://www.playback.ru/";
         PageServiceImpl pageService = new PageServiceImpl(startUrl);
         pageService.getSiteMap();
 
