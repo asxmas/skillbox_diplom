@@ -4,9 +4,19 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import searchapp.dao.FieldDAO;
+import searchapp.dao.IndexDAO;
+import searchapp.dao.LemmaDAO;
+import searchapp.dao.impl.FieldDAOImpl;
+import searchapp.dao.impl.IndexDAOImpl;
+import searchapp.dao.impl.LemmaDAOImpl;
 import searchapp.dao.impl.PageDAOimpl;
+import searchapp.entity.Index;
 import searchapp.entity.Page;
 import searchapp.dao.PageDAO;
 
@@ -26,6 +36,10 @@ public class PageServiceImpl implements searchapp.service.PageService {
 
     @Autowired
     private final PageDAO pageDAO = new PageDAOimpl();
+    private final FieldDAO fieldDAO = new FieldDAOImpl();
+    private final IndexDAO indexDAO = new IndexDAOImpl();
+    private final LemmaDAO lemmaDAO = new LemmaDAOImpl();
+
     private final String startUrl;
 
     @Override
@@ -45,7 +59,8 @@ public class PageServiceImpl implements searchapp.service.PageService {
         page.setPath(url);
         page.setCode(getCode(url));
         page.setContent(getContent(url));
-        pageDAO.save(page);
+        pageDAO.savePage(page);
+        createRank(page);
         return page;
     }
 
@@ -69,7 +84,6 @@ public class PageServiceImpl implements searchapp.service.PageService {
                             Thread.sleep((long)(Math.random()*(500 - 100) + 100));
                             ds.getConnection();
                         } catch (InterruptedException | SQLException throwables) {
-//                            log.error(throwables.getMessage());
                             throwables.printStackTrace();
                         }
                         Arrays.stream(links[finalI]).forEach(this::createPage);
@@ -83,7 +97,6 @@ public class PageServiceImpl implements searchapp.service.PageService {
             try {
                 thread.join();
             } catch (InterruptedException e) {
-//                log.error(e.getMessage());
                 e.printStackTrace();
             }
         });
@@ -121,5 +134,22 @@ public class PageServiceImpl implements searchapp.service.PageService {
             e.printStackTrace();
         }
         return stringBuffer.toString();
+    }
+
+    private void createRank(Page page){
+        Document doc = Jsoup.parse(page.getContent());
+        fieldDAO.findAllFields().forEach(field -> {
+            Elements elements = doc.select(field.getSelector());
+            elements.forEach(element -> {
+                String text = Jsoup.parse(element.toString()).text();
+                LemmatizatorImpl lem = new LemmatizatorImpl(text);
+                lem.saveLemms(lem.getLemms(), page);
+                lem.getLemms().forEach((word, count)
+                        -> indexDAO.saveIndex(new Index(page
+                                                    , lemmaDAO.findLemmaByLemmaName(word).get()
+                                                    , count * field.getWeight())));
+            });
+        });
+
     }
 }

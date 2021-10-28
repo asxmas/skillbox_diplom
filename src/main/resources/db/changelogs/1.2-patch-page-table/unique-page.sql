@@ -2,7 +2,7 @@
 
 -- changeset asxmas:1.2-unique-page
 
-alter table page
-    add constraint page_uindex unique (path);
+ALTER TABLE "public"."page"
+    ADD CONSTRAINT "page_uindex" UNIQUE ("path");
 
 

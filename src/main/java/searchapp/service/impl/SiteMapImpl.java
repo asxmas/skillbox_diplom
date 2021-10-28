@@ -58,7 +58,6 @@ public class SiteMapImpl extends RecursiveAction implements searchapp.service.Si
                 }
             });
         } catch (InterruptedException | IOException e) {
-//            log.error(e.getMessage());
             allLinks.add(e.getMessage().replaceAll(".*=URL", ""));
         }
     }

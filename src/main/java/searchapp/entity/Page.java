@@ -7,6 +7,7 @@ import lombok.Setter;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.*;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -28,4 +29,7 @@ public class Page {
 
     @Column(name = "content", nullable = false)
     private String content;
+
+    @ManyToMany(mappedBy = "pages", fetch = FetchType.LAZY)
+    private Set<Lemma> lemms;
 }

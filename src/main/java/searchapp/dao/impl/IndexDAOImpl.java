@@ -2,49 +2,49 @@ package searchapp.dao.impl;
 
 import org.hibernate.Session;
 import org.hibernate.Transaction;
-import searchapp.dao.PageDAO;
-import searchapp.entity.Page;
 import searchapp.config.HibernateSessionFactoryUtil;
+import searchapp.entity.Index;
 
 import java.util.List;
 
-public class PageDAOimpl implements PageDAO {
+public class IndexDAOImpl implements searchapp.dao.IndexDAO {
+
 
     @Override
-    public Page findPageById(int id){
-        return HibernateSessionFactoryUtil.getSessionFactory().openSession().get(Page.class, id);
+    public Index findIndexById(int id) {
+        return HibernateSessionFactoryUtil.getSessionFactory().openSession().get(Index.class, id);
     }
 
     @Override
-    public void savePage(Page page) {
+    public void saveIndex(Index index) {
         Session session = HibernateSessionFactoryUtil.getSessionFactory().openSession();
         Transaction tx1 = session.beginTransaction();
-        session.save(page);
+        session.save(index);
         tx1.commit();
         session.close();
     }
 
     @Override
-    public void updatePage(Page page) {
+    public void updateIndex(Index index) {
         Session session = HibernateSessionFactoryUtil.getSessionFactory().openSession();
         Transaction tx1 = session.beginTransaction();
-        session.update(page);
+        session.update(index);
         tx1.commit();
         session.close();
     }
 
     @Override
-    public void deletePage(Page page) {
+    public void deleteIndex(Index index) {
         Session session = HibernateSessionFactoryUtil.getSessionFactory().openSession();
         Transaction tx1 = session.beginTransaction();
-        session.delete(page);
+        session.delete(index);
         tx1.commit();
         session.close();
     }
 
     @Override
-    public List<Page> findAllPages() {
-        List<Page> pages = (List<Page>)  HibernateSessionFactoryUtil.getSessionFactory().openSession().createQuery("From Page").list();
-        return pages;
+    public List<Index> findAllIndexes() {
+        List<Index> indexes = (List<Index>) HibernateSessionFactoryUtil.getSessionFactory().openSession().createQuery("From Index ").list();
+        return indexes;
     }
 }

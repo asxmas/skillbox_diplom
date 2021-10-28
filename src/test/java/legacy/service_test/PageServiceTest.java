@@ -1,15 +1,12 @@
 package legacy.service_test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import searchapp.dao.PageDAO;
 import searchapp.dao.impl.PageDAOimpl;
-import searchapp.entity.Page;
 import searchapp.service.impl.PageServiceImpl;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -17,7 +14,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import java.sql.SQLException;
 
 @AutoConfigureMockMvc
@@ -43,7 +39,7 @@ public class PageServiceTest {
         String startUrl = "http://www.playback.ru/warranty.html";
         pageService = new PageServiceImpl(startUrl);
         em.persist(pageService.createPage(startUrl));
-        assertEquals(pageDAO.findAll().size(), 1);
+        assertEquals(pageDAO.findAllPages().size(), 1);
 
     }
 

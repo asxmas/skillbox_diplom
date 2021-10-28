@@ -5,13 +5,13 @@ import searchapp.entity.Page;
 import java.util.List;
 
 public interface PageDAO {
-    Page findById(int id);
+    Page findPageById(int id);
 
-    void save(Page page);
+    void savePage(Page page);
 
-    void update(Page page);
+    void updatePage(Page page);
 
-    void delete(Page user);
+    void deletePage(Page user);
 
-    List<Page> findAll();
+    List<Page> findAllPages();
 }

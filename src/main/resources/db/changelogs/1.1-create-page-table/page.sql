@@ -9,8 +9,6 @@ CREATE TABLE "public"."page"
     "content"           TEXT                        NOT NULL,
     CONSTRAINT "page_pkey" PRIMARY KEY ("id")
 );
-CREATE UNIQUE INDEX
-    ON "page" ("path");
 COMMENT ON COLUMN "public"."page"."path" IS 'адрес страницы от корня сайта (должен начинаться со слеша, например: /news/372189/)';
 COMMENT ON COLUMN "public"."page"."code" IS ' код ответа, полученный при запросе страницы (например, 200, 404, 500 или другие)';
 COMMENT ON COLUMN "public"."page"."content" IS ' контент страницы (HTML-код)';

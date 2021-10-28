@@ -5,3 +5,9 @@ databaseChangeLog:
       file: db/changelogs/1.1-create-page-table/page.sql
   - include:
       file: db/changelogs/1.2-patch-page-table/unique-page.sql
+  - includeAll:
+      path: db/changelogs/4.1-create-tables
+  - include:
+      file: db/changelogs/4.1-foreign-keys/fk.sql
+  - include:
+      file: db/changelogs/4.2-insert-data-in-field/data-field.sql

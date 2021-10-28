@@ -5,6 +5,13 @@ import lombok.RequiredArgsConstructor;
 import org.apache.lucene.morphology.LuceneMorphology;
 import org.apache.lucene.morphology.russian.RussianLuceneMorphology;
 import org.springframework.stereotype.Service;
+import searchapp.dao.IndexDAO;
+import searchapp.dao.LemmaDAO;
+import searchapp.dao.impl.IndexDAOImpl;
+import searchapp.dao.impl.LemmaDAOImpl;
+import searchapp.entity.Field;
+import searchapp.entity.Lemma;
+import searchapp.entity.Page;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -16,6 +23,7 @@ import java.util.stream.Collectors;
 @Service
 public class LemmatizatorImpl implements searchapp.service.Lemmatizator {
     private static LuceneMorphology luceneMorph = null;
+    private final LemmaDAO lemmaDAO = new LemmaDAOImpl();
 
     static {
         try {
@@ -37,6 +45,16 @@ public class LemmatizatorImpl implements searchapp.service.Lemmatizator {
                 .collect(Collectors.toMap(
                         word -> luceneMorph.getNormalForms(word.toLowerCase(Locale.ROOT)).get(0),
                         count -> 1, Integer::sum));
+    }
+
+    public void saveLemms(Map<String, Integer> lemms, Page page){
+        lemms.forEach((word, count) -> {
+            lemmaDAO.findLemmaByLemmaName(word).ifPresentOrElse(lemma
+                            -> {
+                lemma.setFrequency(lemma.getFrequency() + 1);
+                    }
+                    , () -> lemmaDAO.saveLemma(new Lemma(word, 1)));
+        });
     }
     
     private boolean isWord(String word){
