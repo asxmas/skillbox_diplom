@@ -34,11 +34,10 @@ import java.util.concurrent.ForkJoinPool;
 @Service
 public class PageServiceImpl implements searchapp.service.PageService {
 
-    @Autowired
-    private final PageDAO pageDAO = new PageDAOimpl();
-    private final FieldDAO fieldDAO = new FieldDAOImpl();
-    private final IndexDAO indexDAO = new IndexDAOImpl();
-    private final LemmaDAO lemmaDAO = new LemmaDAOImpl();
+    private final PageDAO pageDAO;
+    private final FieldDAO fieldDAO;
+    private final IndexDAO indexDAO;
+    private final LemmaDAO lemmaDAO;
 
     private final String startUrl;
 
@@ -137,7 +136,7 @@ public class PageServiceImpl implements searchapp.service.PageService {
     }
 
     public void generateLemms(Page page){
-        LemmatizatorImpl lem = new LemmatizatorImpl();
+        LemmatizatorImpl lem = new LemmatizatorImpl(lemmaDAO);
         Document doc = Jsoup.parse(page.getContent());
         fieldDAO.findAllFields().forEach(field -> {
             Elements elements = doc.select(field.getSelector());
@@ -149,7 +148,7 @@ public class PageServiceImpl implements searchapp.service.PageService {
     }
 
     public void createRank(Page page){
-        LemmatizatorImpl lem = new LemmatizatorImpl();
+        LemmatizatorImpl lem = new LemmatizatorImpl(lemmaDAO);
         Document doc = Jsoup.parse(page.getContent());
                 fieldDAO.findAllFields().forEach(field -> {
                     Elements elements = doc.select(field.getSelector());

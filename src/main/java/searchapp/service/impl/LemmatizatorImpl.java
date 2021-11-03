@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 @Service
 public class LemmatizatorImpl implements searchapp.service.Lemmatizator {
     private static LuceneMorphology luceneMorph = null;
-    private final LemmaDAO lemmaDAO = new LemmaDAOImpl();
+    private final LemmaDAO lemmaDAO;
 
     static {
         try {

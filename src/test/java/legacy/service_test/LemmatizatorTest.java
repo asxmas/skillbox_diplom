@@ -2,6 +2,7 @@ package legacy.service_test;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import searchapp.repository.dao.impl.LemmaDAOImpl;
 import searchapp.service.impl.LemmatizatorImpl;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -17,7 +18,7 @@ public class LemmatizatorTest {
     @Test
     void getLemmsTest(){
         String text = "Повторное появление леопарда в Осетии позволяет предположить, что леопард постоянно обитает в некоторых районах Северного Кавказа.";
-        LemmatizatorImpl lemmatizator = new LemmatizatorImpl();
+        LemmatizatorImpl lemmatizator = new LemmatizatorImpl(new LemmaDAOImpl());
         Map <String, Integer> excepted = lemmatizator.getLemms(text);
 
         Map <String, Integer> actual = new HashMap<>();
