@@ -1,4 +1,4 @@
-package searchapp.dao;
+package searchapp.repository.dao;
 
 import searchapp.entity.Field;
 

@@ -1,15 +1,12 @@
 package searchapp.service.impl;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.lucene.morphology.LuceneMorphology;
 import org.apache.lucene.morphology.russian.RussianLuceneMorphology;
 import org.springframework.stereotype.Service;
-import searchapp.dao.IndexDAO;
-import searchapp.dao.LemmaDAO;
-import searchapp.dao.impl.IndexDAOImpl;
-import searchapp.dao.impl.LemmaDAOImpl;
-import searchapp.entity.Field;
+import searchapp.repository.dao.IndexDAO;
+import searchapp.repository.dao.LemmaDAO;
+import searchapp.repository.dao.impl.LemmaDAOImpl;
 import searchapp.entity.Lemma;
 import searchapp.entity.Page;
 
@@ -33,12 +30,12 @@ public class LemmatizatorImpl implements searchapp.service.Lemmatizator {
         }
     }
 
-    private final String text;
-
     @Override
-    public Map<String, Integer> getLemms() {
+    public Map<String, Integer> getLemms(String text) {
         return Arrays.stream(text.toLowerCase(Locale.ROOT)
-                .replaceAll("[^a-zа-яЁ\\-\s]", "")
+                //todo: уточнить по поводу английский слов, фирм-производителей и т.д.
+                .replaceAll("[^а-яё\\-\s]", " ")
+                .trim()
                 .replaceAll("[\\s]{2,}", " ")
                 .split(" "))
                 .filter(word -> !isWord(word))
@@ -53,13 +50,21 @@ public class LemmatizatorImpl implements searchapp.service.Lemmatizator {
                             -> {
                 lemma.setFrequency(lemma.getFrequency() + 1);
                     }
-                    , () -> lemmaDAO.saveLemma(new Lemma(word, 1)));
+                    , () -> lemmaDAO.saveLemma(new Lemma(word)));
         });
     }
     
     private boolean isWord(String word){
-        String [] lemArr = luceneMorph.getMorphInfo(word).toArray(new String[0]);
-        String clearWord = lemArr[lemArr.length - 1];
-        return clearWord.contains("СОЮЗ") || clearWord.contains("МЕЖД") || clearWord.contains("ПРЕДЛ") || clearWord.contains("МС");
+        try {
+            String[] lemArr = luceneMorph.getMorphInfo(word.toLowerCase(Locale.ROOT)).toArray(new String[0]);
+            String clearWord = lemArr[lemArr.length - 1];
+            return clearWord.contains("СОЮЗ") || clearWord.contains("МЕЖД") || clearWord.contains("ПРЕДЛ") || clearWord.contains("МС");
+
+        } catch (Exception e){
+            System.out.println(word);
+            e.printStackTrace();
+            return false;
+        }
+
     }
 }

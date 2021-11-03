@@ -3,6 +3,9 @@ package searchapp.config;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
+import searchapp.entity.Field;
+import searchapp.entity.Index;
+import searchapp.entity.Lemma;
 import searchapp.entity.Page;
 
 public class HibernateSessionFactoryUtil {
@@ -17,6 +20,9 @@ public class HibernateSessionFactoryUtil {
             try {
                 Configuration configuration = new Configuration().configure();
                 configuration.addAnnotatedClass(Page.class);
+                configuration.addAnnotatedClass(Field.class);
+                configuration.addAnnotatedClass(Lemma.class);
+                configuration.addAnnotatedClass(Index.class);
                 StandardServiceRegistryBuilder builder = new StandardServiceRegistryBuilder().applySettings(configuration.getProperties());
                 sessionFactory = configuration.buildSessionFactory(builder.build());
             } catch (Exception e) {

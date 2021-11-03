@@ -1,49 +1,50 @@
-package searchapp.dao.impl;
+package searchapp.repository.dao.impl;
 
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import searchapp.repository.dao.PageDAO;
+import searchapp.entity.Page;
 import searchapp.config.HibernateSessionFactoryUtil;
-import searchapp.entity.Field;
 
 import java.util.List;
 
-public class FieldDAOImpl implements searchapp.dao.FieldDAO {
+public class PageDAOimpl implements PageDAO {
 
     @Override
-    public Field findFieldById(int id) {
-        return HibernateSessionFactoryUtil.getSessionFactory().openSession().get(Field.class, id);
+    public Page findPageById(int id){
+        return HibernateSessionFactoryUtil.getSessionFactory().openSession().get(Page.class, id);
     }
 
     @Override
-    public void saveField(Field field) {
+    public void savePage(Page page) {
         Session session = HibernateSessionFactoryUtil.getSessionFactory().openSession();
         Transaction tx1 = session.beginTransaction();
-        session.save(field);
+        session.save(page);
         tx1.commit();
         session.close();
     }
 
     @Override
-    public void updateField(Field field) {
+    public void updatePage(Page page) {
         Session session = HibernateSessionFactoryUtil.getSessionFactory().openSession();
         Transaction tx1 = session.beginTransaction();
-        session.update(field);
+        session.update(page);
         tx1.commit();
         session.close();
     }
 
     @Override
-    public void deleteField(Field field) {
+    public void deletePage(Page page) {
         Session session = HibernateSessionFactoryUtil.getSessionFactory().openSession();
         Transaction tx1 = session.beginTransaction();
-        session.delete(field);
+        session.delete(page);
         tx1.commit();
         session.close();
     }
 
     @Override
-    public List<Field> findAllFields() {
-        List<Field> fields = (List<Field>) HibernateSessionFactoryUtil.getSessionFactory().openSession().createQuery("From Field ").list();
-        return fields;
+    public List<Page> findAllPages() {
+        List<Page> pages = (List<Page>)  HibernateSessionFactoryUtil.getSessionFactory().openSession().createQuery("From Page").list();
+        return pages;
     }
 }

@@ -9,16 +9,16 @@ import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import searchapp.dao.FieldDAO;
-import searchapp.dao.IndexDAO;
-import searchapp.dao.LemmaDAO;
-import searchapp.dao.impl.FieldDAOImpl;
-import searchapp.dao.impl.IndexDAOImpl;
-import searchapp.dao.impl.LemmaDAOImpl;
-import searchapp.dao.impl.PageDAOimpl;
 import searchapp.entity.Index;
 import searchapp.entity.Page;
-import searchapp.dao.PageDAO;
+import searchapp.repository.dao.FieldDAO;
+import searchapp.repository.dao.IndexDAO;
+import searchapp.repository.dao.LemmaDAO;
+import searchapp.repository.dao.PageDAO;
+import searchapp.repository.dao.impl.FieldDAOImpl;
+import searchapp.repository.dao.impl.IndexDAOImpl;
+import searchapp.repository.dao.impl.LemmaDAOImpl;
+import searchapp.repository.dao.impl.PageDAOimpl;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -60,7 +60,7 @@ public class PageServiceImpl implements searchapp.service.PageService {
         page.setCode(getCode(url));
         page.setContent(getContent(url));
         pageDAO.savePage(page);
-        createRank(page);
+        generateLemms(page);
         return page;
     }
 
@@ -136,20 +136,33 @@ public class PageServiceImpl implements searchapp.service.PageService {
         return stringBuffer.toString();
     }
 
-    private void createRank(Page page){
+    public void generateLemms(Page page){
+        LemmatizatorImpl lem = new LemmatizatorImpl();
         Document doc = Jsoup.parse(page.getContent());
         fieldDAO.findAllFields().forEach(field -> {
             Elements elements = doc.select(field.getSelector());
             elements.forEach(element -> {
                 String text = Jsoup.parse(element.toString()).text();
-                LemmatizatorImpl lem = new LemmatizatorImpl(text);
-                lem.saveLemms(lem.getLemms(), page);
-                lem.getLemms().forEach((word, count)
-                        -> indexDAO.saveIndex(new Index(page
-                                                    , lemmaDAO.findLemmaByLemmaName(word).get()
-                                                    , count * field.getWeight())));
+                lem.saveLemms(lem.getLemms(text), page);
             });
         });
+    }
+
+    public void createRank(Page page){
+        LemmatizatorImpl lem = new LemmatizatorImpl();
+        Document doc = Jsoup.parse(page.getContent());
+                fieldDAO.findAllFields().forEach(field -> {
+                    Elements elements = doc.select(field.getSelector());
+                    elements.forEach(element -> {
+                        String text = Jsoup.parse(element.toString()).text();
+                        lem.getLemms(text).forEach((word, count)
+                                -> indexDAO.saveIndex(new Index(page
+                                , lemmaDAO.findLemmaByLemmaName(word).get()
+                                , count * field.getWeight())));
+                    });
+
+            });
+
 
     }
 }

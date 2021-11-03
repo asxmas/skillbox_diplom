@@ -4,6 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
+import searchapp.entity.Page;
 import searchapp.service.impl.PageServiceImpl;
 
 public class App {
@@ -15,8 +16,9 @@ public class App {
         log.info(INFO_MES, "Старт");
         String startUrl = "http://www.playback.ru/";
         PageServiceImpl pageService = new PageServiceImpl(startUrl);
-        pageService.getSiteMap();
 
+        Page page = pageService.createPage(startUrl);
+        pageService.createRank(page);
         log.error("Окончание");
 
     }

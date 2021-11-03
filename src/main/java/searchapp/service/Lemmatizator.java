@@ -5,7 +5,7 @@ import searchapp.entity.Page;
 import java.util.Map;
 
 public interface Lemmatizator {
-    Map<String, Integer> getLemms();
+    Map<String, Integer> getLemms(String text);
 
     void saveLemms(Map<String, Integer> lemms, Page page);
 }

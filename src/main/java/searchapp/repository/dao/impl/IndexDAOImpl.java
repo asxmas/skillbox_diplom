@@ -1,4 +1,4 @@
-package searchapp.dao.impl;
+package searchapp.repository.dao.impl;
 
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -7,7 +7,7 @@ import searchapp.entity.Index;
 
 import java.util.List;
 
-public class IndexDAOImpl implements searchapp.dao.IndexDAO {
+public class IndexDAOImpl implements searchapp.repository.dao.IndexDAO {
 
 
     @Override

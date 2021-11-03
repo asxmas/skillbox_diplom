@@ -31,9 +31,9 @@ public class Lemma {
             inverseJoinColumns = @JoinColumn(name = "page_id", nullable = false))
     private Set<Page> pages;
 
-    public Lemma(String name, int frequency){
+    public Lemma(String name){
         this.lemmaName = name;
-        this.frequency = frequency;
+        this.frequency = 1;
     }
 
 }

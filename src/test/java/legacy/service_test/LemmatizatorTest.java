@@ -17,8 +17,8 @@ public class LemmatizatorTest {
     @Test
     void getLemmsTest(){
         String text = "Повторное появление леопарда в Осетии позволяет предположить, что леопард постоянно обитает в некоторых районах Северного Кавказа.";
-        LemmatizatorImpl lemmatizator = new LemmatizatorImpl(text);
-        Map <String, Integer> excepted = lemmatizator.getLemms();
+        LemmatizatorImpl lemmatizator = new LemmatizatorImpl();
+        Map <String, Integer> excepted = lemmatizator.getLemms(text);
 
         Map <String, Integer> actual = new HashMap<>();
         actual.put("повторный", 1);
