@@ -3,9 +3,13 @@ package searchapp.repository.dao.impl;
 import org.hibernate.QueryException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.query.Query;
 import searchapp.config.HibernateSessionFactoryUtil;
 import searchapp.entity.Lemma;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,20 +25,16 @@ public class LemmaDAOImpl implements searchapp.repository.dao.LemmaDAO {
 //    @Query("select l from Lemma l where l.lemmaName = :lemmaName")
     public Optional<Lemma> findLemmaByLemmaName(String lemmaName){
 
-        try {
-            HibernateSessionFactoryUtil
-                    .getSessionFactory()
-                    .openSession()
-                    .createQuery("select 1 from Lemma l where l.lemmaName =: " + lemmaName)
-                    .uniqueResult();
-        } catch (QueryException ex){
-            return Optional.empty();
-        }
-        return Optional.of((Lemma)HibernateSessionFactoryUtil
-                .getSessionFactory()
-                .openSession()
-                .createQuery("select lem from Lemma lem where lem.lemmaName = :" + lemmaName)
-                .uniqueResult());
+            Session session = HibernateSessionFactoryUtil.getSessionFactory().openSession();
+            CriteriaBuilder cb = session.getCriteriaBuilder();
+            CriteriaQuery<Lemma> cr = cb.createQuery(Lemma.class);
+            Root<Lemma> root = cr.from(Lemma.class);
+            cr.select(root);
+            cr.where(cb.equal(root.get("lemmaName"), lemmaName));
+            Query<Lemma> query = session.createQuery(cr);
+            List<Lemma> results = query.getResultList();
+
+        return results.isEmpty() ? Optional.empty() : Optional.of(results.get(0));
     }
 
     @Override

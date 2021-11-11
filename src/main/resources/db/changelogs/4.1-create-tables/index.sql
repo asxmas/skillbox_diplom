@@ -7,7 +7,7 @@ CREATE TABLE "public"."index"
     "page_id"           INTEGER                     NOT NULL,
     "lemma_id"          INTEGER                     NOT NULL,
     "rank"              FLOAT                       NOT NULL,
-    CONSTRAINT "index_pkey" PRIMARY KEY ("page_id", lemma_id)
+    CONSTRAINT "index_pkey" PRIMARY KEY ("id")
 );
 
 COMMENT ON COLUMN "public"."index"."page_id" IS 'идентификатор страницы';

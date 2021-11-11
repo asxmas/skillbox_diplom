@@ -1,6 +1,6 @@
 -- liquibase formatted sql
 
--- changeset asxmas:4.1-field
+-- changeset asxmas:4-1-field
 CREATE TABLE "public"."field"
 (
     "id"                INTEGER                     NOT NULL,

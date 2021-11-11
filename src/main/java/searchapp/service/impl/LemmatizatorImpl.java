@@ -50,7 +50,13 @@ public class LemmatizatorImpl implements searchapp.service.Lemmatizator {
                             -> {
                 lemma.setFrequency(lemma.getFrequency() + 1);
                     }
-                    , () -> lemmaDAO.saveLemma(new Lemma(word)));
+                    , () -> {
+                        Lemma lemma = new Lemma();
+                        lemma.setLemmaName(word);
+                        lemma.setFrequency(1);
+                        lemmaDAO.saveLemma(lemma);
+
+                    });
         });
     }
     

@@ -4,7 +4,7 @@
 CREATE TABLE "public"."page"
 (
     "id"                INTEGER                     NOT NULL,
-    "path"              VARCHAR(255)                NOT NULL,
+    "path"              TEXT                NOT NULL,
     "code"              INTEGER                     NOT NULL,
     "content"           TEXT                        NOT NULL,
     CONSTRAINT "page_pkey" PRIMARY KEY ("id")

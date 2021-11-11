@@ -35,9 +35,8 @@ public class App {
         fieldDAO.saveField(new Field("body", 0.8f));
         String startUrl = "http://www.playback.ru/";
         PageServiceImpl pageService = new PageServiceImpl(pageDAO, fieldDAO, indexDAO, lemmaDAO, startUrl);
+        pageService.getSiteMap();
 
-        Page page = pageService.createPage(startUrl);
-        pageService.createRank(page);
         log.error("Окончание");
 
     }

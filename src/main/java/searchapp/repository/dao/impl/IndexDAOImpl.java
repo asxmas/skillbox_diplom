@@ -2,10 +2,16 @@ package searchapp.repository.dao.impl;
 
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.query.Query;
 import searchapp.config.HibernateSessionFactoryUtil;
 import searchapp.entity.Index;
+import searchapp.entity.Lemma;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import java.util.List;
+import java.util.Optional;
 
 public class IndexDAOImpl implements searchapp.repository.dao.IndexDAO {
 

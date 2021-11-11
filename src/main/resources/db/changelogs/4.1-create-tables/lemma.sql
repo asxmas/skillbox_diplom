@@ -1,10 +1,10 @@
 -- liquibase formatted sql
 
--- changeset asxmas:4.1-lemma
+-- changeset asxmas:4-1-lemma
 CREATE TABLE "public"."lemma"
 (
     "id"                INTEGER                     NOT NULL,
-    "lemma"             VARCHAR(255)                NOT NULL,
+    "lemma"             TEXT                NOT NULL,
     "frequency"         INTEGER                     NOT NULL,
     CONSTRAINT "lemma_pkey" PRIMARY KEY ("id")
 );

@@ -10,4 +10,4 @@ databaseChangeLog:
   - include:
       file: db/changelogs/4.1-foreign-keys/fk.sql
   - include:
-      file: db/changelogs/4.2-insert-data-in-field/data-field.sql
+      file: db/changelogs/4.2-insert-data/data-field.sql

@@ -27,6 +27,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.concurrent.ForkJoinPool;
 
 @Getter
@@ -60,6 +61,7 @@ public class PageServiceImpl implements searchapp.service.PageService {
         page.setContent(getContent(url));
         pageDAO.savePage(page);
         generateLemms(page);
+        createRank(page);
         return page;
     }
 
@@ -149,19 +151,15 @@ public class PageServiceImpl implements searchapp.service.PageService {
 
     public void createRank(Page page){
         LemmatizatorImpl lem = new LemmatizatorImpl(lemmaDAO);
+        HashMap<String, Float> words = new HashMap<>();
         Document doc = Jsoup.parse(page.getContent());
-                fieldDAO.findAllFields().forEach(field -> {
-                    Elements elements = doc.select(field.getSelector());
-                    elements.forEach(element -> {
-                        String text = Jsoup.parse(element.toString()).text();
-                        lem.getLemms(text).forEach((word, count)
-                                -> indexDAO.saveIndex(new Index(page
-                                , lemmaDAO.findLemmaByLemmaName(word).get()
-                                , count * field.getWeight())));
-                    });
-
+        fieldDAO.findAllFields().forEach(field -> {
+            Elements elements = doc.select(field.getSelector());
+            elements.forEach(element -> {
+                String text = Jsoup.parse(element.toString()).text();
+                lem.getLemms(text).forEach((word, count) -> words.merge(word, count * field.getWeight(), Float::sum));
             });
-
-
+        });
+        words.forEach((word, count) -> indexDAO.saveIndex(new Index(page, lemmaDAO.findLemmaByLemmaName(word).get(), count)));
     }
 }

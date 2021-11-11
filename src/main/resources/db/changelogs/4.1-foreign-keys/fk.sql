@@ -1,6 +1,6 @@
 -- liquibase formatted sql
 
--- changeset asxmas:4.1-fk
+-- changeset asxmas:4-1-fk
 
 ALTER TABLE "public"."index"
     ADD CONSTRAINT "index_page_id_fk" FOREIGN KEY ("page_id") REFERENCES "public"."page" ("id") ON UPDATE NO ACTION ON DELETE NO ACTION,

@@ -5,13 +5,13 @@
 <hibernate-configuration>
     <session-factory>
 
-        <property name="connection.url">jdbc:postgresql://localhost/search_engine</property> <!-- BD Mane -->
+        <property name="connection.url">jdbc:postgresql://localhost:5432/search_engine</property> <!-- BD Mane -->
         <property name="connection.driver_class">org.postgresql.Driver</property> <!-- DB Driver -->
         <property name="connection.username">postgres</property> <!-- DB User -->
         <property name="connection.password">afrby</property> <!-- DB Password -->
 
         <property name="dialect">org.hibernate.dialect.PostgreSQL9Dialect</property> <!-- DB Dialect -->
-        <property name="hbm2ddl.auto">update</property> <!-- create / create-drop / update -->
+        <property name="hbm2ddl.auto">create</property> <!-- create / create-drop / update -->
 
         <mapping class="searchapp.entity.Field" />
         <mapping class="searchapp.entity.Index" />

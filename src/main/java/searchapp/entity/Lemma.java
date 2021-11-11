@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Set;
 
 @Getter
@@ -12,7 +13,7 @@ import java.util.Set;
 @Entity
 @NoArgsConstructor
 @Table(name = "lemma")
-public class Lemma {
+public class Lemma implements Serializable {
 
     @Id
     @Column(name = "id", nullable = false)
@@ -30,10 +31,5 @@ public class Lemma {
             joinColumns = @JoinColumn(name = "lemma_id", nullable = false),
             inverseJoinColumns = @JoinColumn(name = "page_id", nullable = false))
     private Set<Page> pages;
-
-    public Lemma(String name){
-        this.lemmaName = name;
-        this.frequency = 1;
-    }
 
 }
