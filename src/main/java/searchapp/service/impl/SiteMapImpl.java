@@ -11,6 +11,7 @@ import java.util.*;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.RecursiveAction;
 
+
 @Service
 public class SiteMapImpl extends RecursiveAction implements searchapp.service.SiteMap {
     private final Set<SiteMapImpl> childs = new HashSet<>();

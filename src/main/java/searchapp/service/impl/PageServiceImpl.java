@@ -40,17 +40,17 @@ public class PageServiceImpl implements searchapp.service.PageService {
     private final IndexDAO indexDAO;
     private final LemmaDAO lemmaDAO;
 
-    private final String startUrl;
+//    private final String startUrl;
 
-    @Override
-    public void getSiteMap(){
-
-        SiteMapImpl site = new SiteMapImpl(startUrl, startUrl);
-        ForkJoinPool forkJoinPool = new ForkJoinPool();
-        forkJoinPool.invoke(site);
-        createPages(site.getLinks());
-
-    }
+//    @Override
+//    public void getSiteMap(){
+//
+//        SiteMapImpl site = new SiteMapImpl(startUrl, startUrl);
+//        ForkJoinPool forkJoinPool = new ForkJoinPool();
+//        forkJoinPool.invoke(site);
+//        createPages(site.getLinks());
+//
+//    }
 
     @Override
     public Page createPage(String url){
