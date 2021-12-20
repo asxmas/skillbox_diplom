@@ -1,6 +1,5 @@
 package searchapp.repository.dao;
 
-import org.springframework.data.jpa.repository.JpaRepository;
 import searchapp.entity.Lemma;
 
 import java.util.List;
@@ -10,6 +9,8 @@ public interface LemmaDAO {
     Lemma findLemmaById(int id);
 
     Optional<Lemma> findLemmaByLemmaName(String lemmaName);
+
+    List<Lemma> findLemmsByLemmaNames(List<String> lemmaNames);
 
     void saveLemma(Lemma lemma);
 

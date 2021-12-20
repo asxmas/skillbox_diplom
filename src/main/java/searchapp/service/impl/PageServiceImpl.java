@@ -7,18 +7,14 @@ import lombok.RequiredArgsConstructor;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import searchapp.entity.Index;
+import searchapp.entity.Lemma;
 import searchapp.entity.Page;
 import searchapp.repository.dao.FieldDAO;
 import searchapp.repository.dao.IndexDAO;
 import searchapp.repository.dao.LemmaDAO;
 import searchapp.repository.dao.PageDAO;
-import searchapp.repository.dao.impl.FieldDAOImpl;
-import searchapp.repository.dao.impl.IndexDAOImpl;
-import searchapp.repository.dao.impl.LemmaDAOImpl;
-import searchapp.repository.dao.impl.PageDAOimpl;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -26,8 +22,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.HashMap;
+import java.util.*;
 import java.util.concurrent.ForkJoinPool;
 
 @Getter
@@ -40,17 +35,17 @@ public class PageServiceImpl implements searchapp.service.PageService {
     private final IndexDAO indexDAO;
     private final LemmaDAO lemmaDAO;
 
-//    private final String startUrl;
+    private final String startUrl;
 
-//    @Override
-//    public void getSiteMap(){
-//
-//        SiteMapImpl site = new SiteMapImpl(startUrl, startUrl);
-//        ForkJoinPool forkJoinPool = new ForkJoinPool();
-//        forkJoinPool.invoke(site);
-//        createPages(site.getLinks());
-//
-//    }
+    @Override
+    public void getSiteMap(){
+
+        SiteMapImpl site = new SiteMapImpl(startUrl, startUrl);
+        ForkJoinPool forkJoinPool = new ForkJoinPool();
+        forkJoinPool.invoke(site);
+        createPages(site.getLinks());
+
+    }
 
     @Override
     public Page createPage(String url){
@@ -160,6 +155,34 @@ public class PageServiceImpl implements searchapp.service.PageService {
                 lem.getLemms(text).forEach((word, count) -> words.merge(word, count * field.getWeight(), Float::sum));
             });
         });
-        words.forEach((word, count) -> indexDAO.saveIndex(new Index(page, lemmaDAO.findLemmaByLemmaName(word).get(), count)));
+        saveRank(page, words);
+
+    }
+
+    private void saveRank(Page page, Map<String, Float> words){
+        List<Lemma> lemms = new ArrayList<>();
+        List<String> lemmsBlock = new ArrayList<>();
+        for (String lemmaName: words.keySet()) {
+            lemmsBlock.add(lemmaName);
+            if(lemmsBlock.size() == 20){
+                lemms.addAll(lemmaDAO.findLemmsByLemmaNames(lemmsBlock));
+                lemmsBlock.clear();
+            }
+        }
+        lemms.addAll(lemmaDAO.findLemmsByLemmaNames(lemmsBlock));
+        List<Index> indexList = new ArrayList<>();
+        lemms.forEach(lemma -> indexList.add(new Index(page, lemma, words.get(lemma.getLemmaName()))));
+        List<Index> indexListBlock = new ArrayList<>();
+        for (Index index:indexList) {
+            indexListBlock.add(index);
+            if(indexListBlock.size() == 20){
+                indexDAO.saveIndexes(indexListBlock);
+                indexListBlock.clear();
+            }
+        }
+        indexDAO.saveIndexes(indexListBlock);
+
+//
+//        words.forEach((word, count) -> indexDAO.saveIndex(new Index(page, lemmaDAO.findLemmaByLemmaName(word).get(), count)));
     }
 }

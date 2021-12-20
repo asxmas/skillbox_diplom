@@ -1,15 +1,12 @@
 package searchapp.repository.dao.impl;
 
-import org.hibernate.QueryException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 import searchapp.config.HibernateSessionFactoryUtil;
 import searchapp.entity.Lemma;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
+import javax.persistence.criteria.*;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,7 +19,6 @@ public class LemmaDAOImpl implements searchapp.repository.dao.LemmaDAO {
     }
 
     @Override
-//    @Query("select l from Lemma l where l.lemmaName = :lemmaName")
     public Optional<Lemma> findLemmaByLemmaName(String lemmaName){
 
             Session session = HibernateSessionFactoryUtil.getSessionFactory().openSession();
@@ -33,8 +29,22 @@ public class LemmaDAOImpl implements searchapp.repository.dao.LemmaDAO {
             cr.where(cb.equal(root.get("lemmaName"), lemmaName));
             Query<Lemma> query = session.createQuery(cr);
             List<Lemma> results = query.getResultList();
+            session.close();
 
         return results.isEmpty() ? Optional.empty() : Optional.of(results.get(0));
+    }
+
+    @Override
+    public List<Lemma> findLemmsByLemmaNames(List<String> lemmaNames){
+        Session session = HibernateSessionFactoryUtil.getSessionFactory().openSession();
+        CriteriaBuilder cb = session.getCriteriaBuilder();
+        CriteriaQuery<Lemma> cr = cb.createQuery(Lemma.class);
+        Root<Lemma> root = cr.from(Lemma.class);
+        CriteriaBuilder.In<String> in = cb.in(root.get("lemmaName"));
+        lemmaNames.forEach(in::value);
+        List<Lemma> lemms = session.createQuery(cr.select(root).where(in)).getResultList();
+        session.close();
+        return lemms;
     }
 
     @Override

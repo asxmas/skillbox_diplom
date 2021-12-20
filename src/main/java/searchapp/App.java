@@ -30,13 +30,13 @@ public class App {
         LemmaDAO lemmaDAO = new LemmaDAOImpl();
         log.info(INFO_MES, "Старт");
 
-//        fieldDAO.saveField(new Field("title", 1.0f));
-//        fieldDAO.saveField(new Field("body", 0.8f));
-        String startUrl = "http://www.playback.ru/contacts.html";
-        PageServiceImpl pageService = new PageServiceImpl(pageDAO, fieldDAO, indexDAO, lemmaDAO);
-//        pageService.getSiteMap();
+        fieldDAO.saveField(new Field("title", 1.0f));
+        fieldDAO.saveField(new Field("body", 0.8f));
+        String startUrl = "http://www.playback.ru/";
+        PageServiceImpl pageService = new PageServiceImpl(pageDAO, fieldDAO, indexDAO, lemmaDAO, startUrl);
+        pageService.getSiteMap();
 //        pageService.createPage(startUrl);
-        pageService.createPage("http://www.playback.ru/contacts.html");
+//        pageService.createPage("http://www.playback.ru/contacts.html");
 //        Lemma lemma = lemmaDAO.findLemmaByLemmaName("контакт").get();
 //        System.out.println(lemma.getFrequency());
 //        lemma.setFrequency(lemma.getFrequency()+1);

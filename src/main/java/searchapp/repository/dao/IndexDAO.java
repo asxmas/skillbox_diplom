@@ -9,6 +9,8 @@ public interface IndexDAO {
 
     void saveIndex(Index index);
 
+    void saveIndexes(List<Index> indexList);
+
     void updateIndex(Index index);
 
     void deleteIndex(Index index);

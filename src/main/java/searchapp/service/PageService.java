@@ -4,7 +4,7 @@ import searchapp.entity.Page;
 
 public interface PageService {
 
-//    void getSiteMap();
+    void getSiteMap();
 
     Page createPage(String url);
 
