@@ -4,7 +4,11 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import searchapp.config.HibernateSessionFactoryUtil;
 import searchapp.entity.Index;
+import searchapp.entity.Lemma;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import java.util.List;
 
 public class IndexDAOImpl implements searchapp.repository.dao.IndexDAO {
@@ -31,6 +35,19 @@ public class IndexDAOImpl implements searchapp.repository.dao.IndexDAO {
         indexList.forEach(session::save);
         tx1.commit();
         session.close();
+    }
+
+    @Override
+    public List<Index> findIndexesByPageIds(List<Integer> indexIdList){
+        Session session = HibernateSessionFactoryUtil.getSessionFactory().openSession();
+        CriteriaBuilder cb = session.getCriteriaBuilder();
+        CriteriaQuery<Index> cr = cb.createQuery(Index.class);
+        Root<Index> root = cr.from(Index.class);
+        CriteriaBuilder.In<Integer> in = cb.in(root.get("page"));
+        indexIdList.forEach(in::value);
+        List<Index> indexes = session.createQuery(cr.select(root).where(in)).getResultList();
+        session.close();
+        return indexes;
     }
 
     @Override

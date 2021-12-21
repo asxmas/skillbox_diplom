@@ -4,24 +4,26 @@ import lombok.RequiredArgsConstructor;
 import org.apache.lucene.morphology.LuceneMorphology;
 import org.apache.lucene.morphology.english.EnglishLuceneMorphology;
 import org.apache.lucene.morphology.russian.RussianLuceneMorphology;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
+import searchapp.repository.dao.FieldDAO;
 import searchapp.repository.dao.LemmaDAO;
 import searchapp.entity.Lemma;
 import searchapp.entity.Page;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
-public class LemmatizatorImpl implements searchapp.service.Lemmatizator {
+public class LemmatizatorServiceImpl implements searchapp.service.Lemmatizator {
     private static LuceneMorphology luceneRusMorph = null;
     private static LuceneMorphology luceneEngMorph = null;
     private final LemmaDAO lemmaDAO;
+    private final FieldDAO fieldDAO;
 
     static {
         try {
@@ -54,6 +56,33 @@ public class LemmatizatorImpl implements searchapp.service.Lemmatizator {
         allLemms.putAll(rusLemms);
 
         return allLemms;
+    }
+
+    @Override
+    public List<Lemma> getLemmsForSearch(String text){
+        Set<String> lemmaNames = Arrays.stream(text.toLowerCase(Locale.ROOT)
+                        .replaceAll("[^a-zа-яё\\-\s]", "")
+                        .replaceAll("[\\s]{2,}", " ")
+                        .split(" "))
+                        .filter(word -> isEngWord(word) || isRusWord(word))
+                        .collect(Collectors.toSet());
+        return lemmaDAO.findLemmsByLemmaNames(lemmaNames.stream().toList())
+                .stream()
+                .sorted(Comparator.comparingInt(Lemma::getFrequency))
+                .toList();
+    }
+
+    @Override
+    public void generateLemms(Page page){
+        LemmatizatorServiceImpl lem = new LemmatizatorServiceImpl(lemmaDAO, fieldDAO);
+        Document doc = Jsoup.parse(page.getContent());
+        fieldDAO.findAllFields().forEach(field -> {
+            Elements elements = doc.select(field.getSelector());
+            elements.forEach(element -> {
+                String text = Jsoup.parse(element.toString()).text();
+                lem.saveLemms(lem.getLemms(text), page);
+            });
+        });
     }
 
     public void saveLemms(Map<String, Integer> lemms, Page page){

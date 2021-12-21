@@ -6,6 +6,9 @@ import searchapp.repository.dao.PageDAO;
 import searchapp.entity.Page;
 import searchapp.config.HibernateSessionFactoryUtil;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import java.util.List;
 
 public class PageDAOimpl implements PageDAO {
@@ -13,6 +16,19 @@ public class PageDAOimpl implements PageDAO {
     @Override
     public Page findPageById(int id){
         return HibernateSessionFactoryUtil.getSessionFactory().openSession().get(Page.class, id);
+    }
+
+    @Override
+    public List<Page> findPagesByIds(List<Integer> pageIds){
+        Session session = HibernateSessionFactoryUtil.getSessionFactory().openSession();
+        CriteriaBuilder cb = session.getCriteriaBuilder();
+        CriteriaQuery<Page> cr = cb.createQuery(Page.class);
+        Root<Page> root = cr.from(Page.class);
+        CriteriaBuilder.In<Integer> in = cb.in(root.get("page"));
+        pageIds.forEach(in::value);
+        List<Page> pages = session.createQuery(cr.select(root).where(in)).getResultList();
+        session.close();
+        return pages;
     }
 
     @Override

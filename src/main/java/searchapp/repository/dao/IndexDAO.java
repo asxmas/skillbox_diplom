@@ -11,6 +11,8 @@ public interface IndexDAO {
 
     void saveIndexes(List<Index> indexList);
 
+    List<Index> findIndexesByPageIds(List<Integer> indexList);
+
     void updateIndex(Index index);
 
     void deleteIndex(Index index);

@@ -17,6 +17,7 @@ import searchapp.repository.dao.impl.IndexDAOImpl;
 import searchapp.repository.dao.impl.LemmaDAOImpl;
 import searchapp.repository.dao.impl.PageDAOimpl;
 import searchapp.service.impl.PageServiceImpl;
+import searchapp.service.impl.SearchServiceImpl;
 
 public class App {
     private static final Logger log = LogManager.getRootLogger();
@@ -30,17 +31,20 @@ public class App {
         LemmaDAO lemmaDAO = new LemmaDAOImpl();
         log.info(INFO_MES, "Старт");
 
-        fieldDAO.saveField(new Field("title", 1.0f));
-        fieldDAO.saveField(new Field("body", 0.8f));
-        String startUrl = "http://www.playback.ru/";
-        PageServiceImpl pageService = new PageServiceImpl(pageDAO, fieldDAO, indexDAO, lemmaDAO, startUrl);
-        pageService.getSiteMap();
+//        fieldDAO.saveField(new Field("title", 1.0f));
+//        fieldDAO.saveField(new Field("body", 0.8f));
+//        String startUrl = "http://www.playback.ru/";
+//        PageServiceImpl pageService = new PageServiceImpl(pageDAO, fieldDAO, indexDAO, lemmaDAO, startUrl);
+//        pageService.getSiteMap();
 //        pageService.createPage(startUrl);
 //        pageService.createPage("http://www.playback.ru/contacts.html");
 //        Lemma lemma = lemmaDAO.findLemmaByLemmaName("контакт").get();
 //        System.out.println(lemma.getFrequency());
 //        lemma.setFrequency(lemma.getFrequency()+1);
 //        System.out.println(lemma.getFrequency());
+        String searchQuery = "Xiaomi mi 11 pro";
+        SearchServiceImpl searchService = new SearchServiceImpl(pageDAO, fieldDAO, indexDAO, lemmaDAO, searchQuery);
+        searchService.getResultList().forEach(page -> System.out.println(page.getPath()));
         log.error("Окончание");
 
     }
