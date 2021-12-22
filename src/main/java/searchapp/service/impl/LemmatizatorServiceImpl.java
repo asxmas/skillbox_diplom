@@ -12,6 +12,7 @@ import searchapp.repository.dao.FieldDAO;
 import searchapp.repository.dao.LemmaDAO;
 import searchapp.entity.Lemma;
 import searchapp.entity.Page;
+import searchapp.service.LemmatizatorService;
 
 import java.io.IOException;
 import java.util.*;
@@ -19,7 +20,7 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
-public class LemmatizatorServiceImpl implements searchapp.service.Lemmatizator {
+public class LemmatizatorServiceImpl implements LemmatizatorService {
     private static LuceneMorphology luceneRusMorph = null;
     private static LuceneMorphology luceneEngMorph = null;
     private final LemmaDAO lemmaDAO;
@@ -66,10 +67,7 @@ public class LemmatizatorServiceImpl implements searchapp.service.Lemmatizator {
                         .split(" "))
                         .filter(word -> isEngWord(word) || isRusWord(word))
                         .collect(Collectors.toSet());
-        return lemmaDAO.findLemmsByLemmaNames(lemmaNames.stream().toList())
-                .stream()
-                .sorted(Comparator.comparingInt(Lemma::getFrequency))
-                .toList();
+        return lemmaDAO.findLemmsByLemmaNames(lemmaNames.stream().toList());
     }
 
     @Override

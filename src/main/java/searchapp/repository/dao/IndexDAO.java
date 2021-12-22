@@ -11,7 +11,12 @@ public interface IndexDAO {
 
     void saveIndexes(List<Index> indexList);
 
-    List<Index> findIndexesByPageIds(List<Integer> indexList);
+
+    List<Index> findIndexesByLemmaId(Integer lemmaId);
+
+    List<Index> findIndexesByPageIds(List<Integer> pageIds);
+
+    List<Index> getIndexListForRelevance(List<Integer> pageIdList, List<Integer> lemmIdList);
 
     void updateIndex(Index index);
 

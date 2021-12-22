@@ -24,7 +24,7 @@ public class PageDAOimpl implements PageDAO {
         CriteriaBuilder cb = session.getCriteriaBuilder();
         CriteriaQuery<Page> cr = cb.createQuery(Page.class);
         Root<Page> root = cr.from(Page.class);
-        CriteriaBuilder.In<Integer> in = cb.in(root.get("page"));
+        CriteriaBuilder.In<Integer> in = cb.in(root.get("id"));
         pageIds.forEach(in::value);
         List<Page> pages = session.createQuery(cr.select(root).where(in)).getResultList();
         session.close();

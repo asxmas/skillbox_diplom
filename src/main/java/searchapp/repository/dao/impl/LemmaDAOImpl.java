@@ -38,13 +38,13 @@ public class LemmaDAOImpl implements searchapp.repository.dao.LemmaDAO {
     public List<Lemma> findLemmsByLemmaNames(List<String> lemmaNames){
         Session session = HibernateSessionFactoryUtil.getSessionFactory().openSession();
         CriteriaBuilder cb = session.getCriteriaBuilder();
-        CriteriaQuery<Lemma> cr = cb.createQuery(Lemma.class);
-        Root<Lemma> root = cr.from(Lemma.class);
-        CriteriaBuilder.In<String> in = cb.in(root.get("lemmaName"));
-        lemmaNames.forEach(in::value);
-        List<Lemma> lemms = session.createQuery(cr.select(root).where(in)).getResultList();
-        session.close();
-        return lemms;
+        CriteriaQuery<Lemma> query = cb.createQuery(Lemma.class);
+        Root<Lemma> root = query.from(Lemma.class);
+        return session.createQuery(query.select(root)
+                        .where(root.get("lemmaName")
+                        .in(lemmaNames))
+                        .orderBy(cb.asc(root.get("frequency"))))
+                        .getResultList();
     }
 
     @Override

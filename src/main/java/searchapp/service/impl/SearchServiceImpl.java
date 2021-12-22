@@ -10,10 +10,10 @@ import searchapp.repository.dao.FieldDAO;
 import searchapp.repository.dao.IndexDAO;
 import searchapp.repository.dao.LemmaDAO;
 import searchapp.repository.dao.PageDAO;
-import searchapp.service.Lemmatizator;
+import searchapp.service.LemmatizatorService;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Getter
@@ -27,20 +27,48 @@ public class SearchServiceImpl {
 
     private final String searchQuery;
 
-    public List<Page> getResultList(){
-        Lemmatizator lemmatizator = new LemmatizatorServiceImpl(lemmaDAO, fieldDAO);
-        return searchPages(lemmatizator.getLemmsForSearch(searchQuery), indexDAO.findAllIndexes());
+    public Map<Page, Float> getResultList(){
+        LemmatizatorService lemmatizator = new LemmatizatorServiceImpl(lemmaDAO, fieldDAO);
+        ArrayList<Integer> lemmaList = new ArrayList<>(lemmatizator.getLemmsForSearch(searchQuery)
+                .stream()
+                .map(Lemma::getId).toList());
+        int firstLemmaId = lemmaList.get(0);
+        List<Integer> pageIds = searchPages(lemmaList, indexDAO.findIndexesByLemmaId(firstLemmaId)
+                                                            .stream()
+                                                            .map(index -> index.getPage().getId())
+                                                            .toList());
+        Map<Integer, Float> mapWithRelevance = getMapWithRelevance(pageIds, lemmaList);
+        Map<Page, Float> mapPageRank = new HashMap<>();
+        mapWithRelevance.forEach((key, value) -> mapPageRank.put(pageDAO.findPageById(key), value));
+        return mapPageRank;
 
     }
 
-    public List<Page> searchPages(List<Lemma> lemmaList, List<Index> indexList){
-        ArrayList<Lemma> lemmList = new ArrayList<>(lemmaList);
-        Lemma lemma = lemmList.get(0);
-        List <Integer> pageIdList = indexList.stream()
-                .filter(index -> index.getLemma().getId() == lemma.getId())
-                .map(index -> index.getPage().getId()).toList();
+    private List<Integer> searchPages(List<Integer> lemmaList, List<Integer> pageList){
+        ArrayList<Integer> lemmIdList = new ArrayList<>(lemmaList);
+        List <Index> indexesFromPageIds = indexDAO.findIndexesByPageIds(pageList);
+        List <Integer> pageIdList = indexesFromPageIds.stream()
+                .filter(index -> index.getLemma().getId() == lemmaList.get(0))
+                .sorted(Comparator.comparing(Index::getRank).reversed())
+                .map(index -> index.getPage().getId())
+                .toList();
+        lemmIdList.remove(0);
+        return lemmIdList.isEmpty() ? pageIdList
+                                    : searchPages(lemmIdList, pageIdList);
+    }
 
-        lemmList.remove(0);
-        return lemmaList.isEmpty() ? pageDAO.findPagesByIds(pageIdList) : searchPages(lemmaList, indexDAO.findIndexesByPageIds(pageIdList));
+    private Map<Integer, Float> getMapWithRelevance (List<Integer> pageIdList, List<Integer> lemmIdList){
+        List<Index> indexList = indexDAO.getIndexListForRelevance(pageIdList, lemmIdList);
+        Map<Integer, Float> pageMapWithRelevance = new HashMap<>();
+        for (Index index : indexList) {
+            if(pageMapWithRelevance.containsKey(index.getPage().getId())){
+                float value = pageMapWithRelevance.get(index.getPage().getId()) + index.getRank();
+                pageMapWithRelevance.put(index.getPage().getId(), value);
+            }
+            else{
+                pageMapWithRelevance.put(index.getPage().getId(), index.getRank());
+            }
+        }
+        return pageMapWithRelevance;
     }
 }

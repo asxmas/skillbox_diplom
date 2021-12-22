@@ -6,7 +6,7 @@ import searchapp.entity.Page;
 import java.util.List;
 import java.util.Map;
 
-public interface Lemmatizator {
+public interface LemmatizatorService {
     Map<String, Integer> getLemms(String text);
 
     List<Lemma> getLemmsForSearch(String text);

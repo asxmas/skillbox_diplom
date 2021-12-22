@@ -4,19 +4,14 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
-import searchapp.entity.Index;
-import searchapp.entity.Lemma;
 import searchapp.entity.Page;
 import searchapp.repository.dao.FieldDAO;
 import searchapp.repository.dao.IndexDAO;
 import searchapp.repository.dao.LemmaDAO;
 import searchapp.repository.dao.PageDAO;
 import searchapp.service.IndexService;
-import searchapp.service.Lemmatizator;
+import searchapp.service.LemmatizatorService;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -51,7 +46,7 @@ public class PageServiceImpl implements searchapp.service.PageService {
 
     @Override
     public Page createPage(String url){
-        Lemmatizator lemmatizator = new LemmatizatorServiceImpl(lemmaDAO, fieldDAO);
+        LemmatizatorService lemmatizator = new LemmatizatorServiceImpl(lemmaDAO, fieldDAO);
         IndexService indexService = new IndexServiceImpl(indexDAO, lemmaDAO, fieldDAO);
         Page page = new Page();
         page.setPath(url);
