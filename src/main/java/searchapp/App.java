@@ -50,11 +50,7 @@ public class App {
 //        lemmaList.forEach(lemma -> System.out.println(lemma.getLemmaName()));
 
         SearchServiceImpl searchService = new SearchServiceImpl(pageDAO, fieldDAO, indexDAO, lemmaDAO, searchQuery);
-        searchService.getResultList().entrySet().stream()
-                .sorted(Map.Entry.<Page, Float>comparingByValue().reversed())
-                .forEach(pageFloatEntry -> System.out.println(pageFloatEntry.getKey().getPath()
-                        + " "
-                        + pageFloatEntry.getValue()));
+        System.out.println(searchService.getResultList());
         log.error("Окончание");
 
     }

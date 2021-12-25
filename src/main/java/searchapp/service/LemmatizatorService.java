@@ -11,6 +11,8 @@ public interface LemmatizatorService {
 
     List<Lemma> getLemmsForSearch(String text);
 
+    String getLemm(String text);
+
     void generateLemms(Page page);
 
     void saveLemms(Map<String, Integer> lemms, Page page);

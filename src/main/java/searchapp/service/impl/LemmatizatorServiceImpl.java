@@ -71,6 +71,17 @@ public class LemmatizatorServiceImpl implements LemmatizatorService {
     }
 
     @Override
+    public String getLemm (String text){
+        if(isEngWord(text)){
+            return luceneEngMorph.getNormalForms(text).get(0);
+        }
+        if(isRusWord(text)){
+            return luceneRusMorph.getNormalForms(text).get(0);
+        }
+        return text;
+    }
+
+    @Override
     public void generateLemms(Page page){
         LemmatizatorServiceImpl lem = new LemmatizatorServiceImpl(lemmaDAO, fieldDAO);
         Document doc = Jsoup.parse(page.getContent());
