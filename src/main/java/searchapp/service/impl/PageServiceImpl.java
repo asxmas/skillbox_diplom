@@ -1,15 +1,17 @@
 package searchapp.service.impl;
 
+import searchapp.config.Sites;
+import searchapp.entity.Site;
+import searchapp.entity.enums.SiteStatus;
+import searchapp.mapper.IndexWrapper;
+import searchapp.service.PageService;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import searchapp.entity.Page;
-import searchapp.repository.dao.FieldDAO;
-import searchapp.repository.dao.IndexDAO;
-import searchapp.repository.dao.LemmaDAO;
-import searchapp.repository.dao.PageDAO;
+import searchapp.repository.*;
 import searchapp.service.IndexService;
 import searchapp.service.LemmatizatorService;
 
@@ -17,43 +19,92 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.ForkJoinPool;
+
 
 @Getter
 @RequiredArgsConstructor
 @Service
-public class PageServiceImpl implements searchapp.service.PageService {
+public class PageServiceImpl implements PageService {
 
-    private final PageDAO pageDAO;
-    private final FieldDAO fieldDAO;
-    private final IndexDAO indexDAO;
-    private final LemmaDAO lemmaDAO;
+    private final PageRepository pageRepository;
+    private final FieldRepository fieldRepository;
+    private final IndexRepository indexRepository;
+    private final LemmaRepository lemmaRepository;
+    private final SiteRepository siteRepository;
+    private final LemmatizatorService lemmatizatorService;
+    private final IndexService indexService;
+    private final Sites sites;
 
-    private final String startUrl;
+    private String startUrl;
+    private boolean isIndexing = false;
+    private ForkJoinPool forkJoinPool;
+
 
     @Override
-    public void getSiteMap(){
+    public IndexWrapper getSiteMap(String startUrl){
+        try {
+            new URL(startUrl);
+        }
+        catch (MalformedURLException ex){
+            return IndexWrapper.builder()
+                    .result(false)
+                    .error("Incorrect URL")
+                    .build();
+        }
 
+        if(!urlIsAllowed(startUrl)){
+            return IndexWrapper.builder()
+                    .result(false)
+                    .error("This URL not allowed in App")
+                    .build();
+        }
+
+        siteRepository.findByUrl(startUrl).ifPresentOrElse((site) -> {
+            site.setStatusTime(LocalDateTime.now());
+            site.setStatus(SiteStatus.INDEXING);
+        },() -> {
+            Site site = new Site();
+            site.setUrl(startUrl);
+            site.setStatus(SiteStatus.INDEXING);
+            site.setName(startUrl);
+            site.setStatusTime(LocalDateTime.now());
+
+        });
         SiteMapImpl site = new SiteMapImpl(startUrl, startUrl);
-        ForkJoinPool forkJoinPool = new ForkJoinPool();
+        forkJoinPool = new ForkJoinPool();
         forkJoinPool.invoke(site);
         createPages(site.getLinks());
 
+        return IndexWrapper.builder()
+                .result(true).build();
+    }
+
+    @Override
+    public IndexWrapper getSiteMaps(){
+        if(isIndexing){
+            return IndexWrapper.builder().result(true).build();
+        }
+        isIndexing = true;
+        siteRepository.findAll().forEach(site -> getSiteMap(site.getUrl()));
+        return IndexWrapper.builder()
+                .result(false)
+                .error("Indexing already launched").build();
     }
 
     @Override
     public Page createPage(String url){
-        LemmatizatorService lemmatizator = new LemmatizatorServiceImpl(lemmaDAO, fieldDAO);
-        IndexService indexService = new IndexServiceImpl(indexDAO, lemmaDAO, fieldDAO);
         Page page = new Page();
         page.setPath(url);
         page.setCode(getCode(url));
         page.setContent(getContent(url));
-        pageDAO.savePage(page);
-        lemmatizator.generateLemms(page);
+        pageRepository.save(page);
+        lemmatizatorService.generateLemms(page);
         indexService.createRank(page);
         return page;
     }
@@ -130,7 +181,26 @@ public class PageServiceImpl implements searchapp.service.PageService {
         return stringBuffer.toString();
     }
 
+    @Override
+    public IndexWrapper stopIndexing(){
+        if(isIndexing){
+            forkJoinPool.shutdown();
+            isIndexing = false;
+            return IndexWrapper.builder()
+                    .result(true)
+                    .build();
+        }
+        return IndexWrapper.builder()
+                .result(false)
+                .error("Индексация не запущена")
+                .build();
+    }
 
-
-
+    private boolean urlIsAllowed(String url){
+        for(Site site : sites.getSitesList()){
+            if(site.getUrl().equals(url))
+                return true;
+            }
+        return false;
+    }
 }

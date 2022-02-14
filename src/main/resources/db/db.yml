@@ -9,5 +9,9 @@ databaseChangeLog:
       path: db/changelogs/4.1-create-tables
   - include:
       file: db/changelogs/4.1-foreign-keys/fk.sql
+  - includeAll:
+      path: db/changelogs/6.1-create-site-upd-page-lem
+  - includeAll:
+      path: db/changelogs/6.2-add-fk-site
   - include:
-      file: db/changelogs/4.2-insert-data/data-field.sql
+      file: db/changelogs/6.3-insert-field/insert-field.sql

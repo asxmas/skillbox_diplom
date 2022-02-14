@@ -1,10 +1,13 @@
 package searchapp.service;
 
 import searchapp.entity.Page;
+import searchapp.mapper.IndexWrapper;
 
 public interface PageService {
 
-    void getSiteMap();
+    IndexWrapper getSiteMap(String startUrl);
+
+    IndexWrapper getSiteMaps();
 
     Page createPage(String url);
 
@@ -12,4 +15,5 @@ public interface PageService {
 
     String getContent(String link);
 
+    IndexWrapper stopIndexing();
 }

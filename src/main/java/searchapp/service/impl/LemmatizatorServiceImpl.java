@@ -8,8 +8,8 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
-import searchapp.repository.dao.FieldDAO;
-import searchapp.repository.dao.LemmaDAO;
+import searchapp.repository.FieldRepository;
+import searchapp.repository.LemmaRepository;
 import searchapp.entity.Lemma;
 import searchapp.entity.Page;
 import searchapp.service.LemmatizatorService;
@@ -23,8 +23,8 @@ import java.util.stream.Collectors;
 public class LemmatizatorServiceImpl implements LemmatizatorService {
     private static LuceneMorphology luceneRusMorph = null;
     private static LuceneMorphology luceneEngMorph = null;
-    private final LemmaDAO lemmaDAO;
-    private final FieldDAO fieldDAO;
+    private final LemmaRepository lemmaRepository;
+    private final FieldRepository fieldRepository;
 
     static {
         try {
@@ -67,7 +67,7 @@ public class LemmatizatorServiceImpl implements LemmatizatorService {
                         .split(" "))
                         .filter(word -> isEngWord(word) || isRusWord(word))
                         .collect(Collectors.toSet());
-        return lemmaDAO.findLemmsByLemmaNames(lemmaNames.stream().toList());
+        return lemmaRepository.findAllByLemmaNameIn(lemmaNames.stream().toList());
     }
 
     @Override
@@ -83,29 +83,28 @@ public class LemmatizatorServiceImpl implements LemmatizatorService {
 
     @Override
     public void generateLemms(Page page){
-        LemmatizatorServiceImpl lem = new LemmatizatorServiceImpl(lemmaDAO, fieldDAO);
         Document doc = Jsoup.parse(page.getContent());
-        fieldDAO.findAllFields().forEach(field -> {
+        fieldRepository.findAll().forEach(field -> {
             Elements elements = doc.select(field.getSelector());
             elements.forEach(element -> {
                 String text = Jsoup.parse(element.toString()).text();
-                lem.saveLemms(lem.getLemms(text), page);
+                saveLemms(getLemms(text), page);
             });
         });
     }
 
     public void saveLemms(Map<String, Integer> lemms, Page page){
 
-        lemms.forEach((word, count) -> lemmaDAO.findLemmaByLemmaName(word).ifPresentOrElse(lemma
+        lemms.forEach((word, count) -> lemmaRepository.findLemmaByLemmaName(word).ifPresentOrElse(lemma
                         -> {
-            lemma.setFrequency(lemma.getFrequency() + 1);
-            lemmaDAO.updateLemma(lemma);
+            int frequency = lemma.getFrequency() + 1;
+            lemmaRepository.updateLemma(frequency, lemma.getId());
                 }
                 , () -> {
                     Lemma lemma = new Lemma();
                     lemma.setLemmaName(word);
                     lemma.setFrequency(1);
-                    lemmaDAO.saveLemma(lemma);
+                    lemmaRepository.save(lemma);
 
                 }));
     }
